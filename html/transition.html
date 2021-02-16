@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>跃迁距离计算</title>
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<link rel="stylesheet" href="../layui/css/layui.css" media="all">
+		
+	</head>
+	<body style="padding: 20px; background-color: #F2F2F2;">
+		<div class="layui-col-md12">
+			<div class="layui-col-md12">
+				<div class="layui-card">
+					<div class="layui-card-header">跃迁距离计算</div>
+					<div class="layui-card-body">
+						<form class="layui-form" action="">
+							<div class="layui-form-item">
+							   <label class="layui-form-label">整船质量(t)</label>
+							   <div class="layui-input-block" style="width: 400px;" > 
+							    <input type="text"  class="layui-btn layui-btn-primary layui-btn-sm"  id="weight" value="0">
+							   </div>
+							 </div>
+						<div class="layui-form-item" pane="">
+						    <label class="layui-form-label">跃迁引擎</label>
+						    <div class="layui-input-block">
+						      <input type="radio" lay-filter="engineGrade" name="engineGrade" value=0 title="白板" checked="">
+						      <input type="radio" lay-filter="engineGrade" name="engineGrade" value=1 title="MK1">
+							  <input type="radio" lay-filter="engineGrade" name="engineGrade" value=2 title="MK2">
+							  <input type="radio" lay-filter="engineGrade" name="engineGrade" value=3 title="MK3">
+							  <input type="radio" lay-filter="engineGrade" name="engineGrade" value=4 title="ADV1">
+							  <input type="radio" lay-filter="engineGrade" name="engineGrade" value=5 title="ADV2">
+							  <input type="radio" lay-filter="engineGrade" name="engineGrade" value=6 title="ADV3">
+						    </div>
+						  </div>
+						 <div class="layui-form-item">
+						    <label class="layui-form-label">引擎数量</label>
+						    <div class="layui-input-block" style="width: 200px;" > 
+						     <button type="button" class="layui-btn layui-btn-normal layui-btn-sm"><i class="layui-icon" onclick="reduceEngine()"></i></button>
+						     <input type="text"  oninput="value=value.replace(/[^\d]/g,'')" class="layui-btn layui-btn-primary layui-btn-sm" style="width: 50px;" id="Enginenum" value="1">
+						     <button type="button" class="layui-btn layui-btn-normal layui-btn-sm"><i class="layui-icon"  onclick="addEngine()"></i></button>
+						    </div>
+						  </div>
+						  <div class="layui-form-item">
+						  	<div class="layui-input-block">
+						  		 <button type="button" class="layui-btn layui-btn-lg layui-btn-normal" onclick="addEngineToTable()">添加引擎</button>
+						  	</div>
+						   </div>
+						 </form>
+					</div>
+					
+				</div>
+				<br />
+				<fieldset class="layui-elem-field">
+				  <legend>合计</legend>
+				  <div class="layui-field-box">
+					  <div id="engineList">
+							
+						  
+					  </div>
+					  <hr />
+				    <font id="TotalDistance" style="color: #1E9FFF;font-size: 20px;"></font>
+				  </div>
+				</fieldset>
+				</div>
+				
+			</div>
+			
+		</div>
+		
+
+
+
+			<script src="../layui/layui.js" charset="utf-8"></script>
+			<script src="../js/jquery-3.5.1.min.js"></script>
+			<script>
+				var EnglineData=[
+					{id:0,name:"白板",maxdistance:1200,maxload:1500},
+					{id:1,name:"MK1",maxdistance:1600,maxload:4000},
+					{id:2,name:"MK2",maxdistance:1800,maxload:8000},
+					{id:3,name:"MK3",maxdistance:2400,maxload:16000},
+					{id:4,name:"ADV1",maxdistance:3600,maxload:16000},
+					{id:5,name:"ADV2",maxdistance:6000,maxload:24000},
+					{id:6,name:"ADV3",maxdistance:9600,maxload:40000}
+					];
+				var from=null;
+				var selectEngline=0;
+				var englineList=new Array();
+				layui.use(['form', 'layedit', 'laydate'], function(){
+				  form = layui.form;
+					  form.on('radio(engineGrade)', function(data){
+					  	selectEngline=data.value;
+					  });
+				});
+				function reduceEngine(){
+					let value=$("#Enginenum").val();
+					if(value>1){
+						value--;
+						$("#Enginenum").val(value);
+					}
+				}
+				function addEngine(){
+					let value=$("#Enginenum").val();
+					value++;
+					$("#Enginenum").val(value);
+				}
+				function addEngineToTable(){
+					let weight=parseInt($("#weight").val());
+					let Enginenum=parseInt($("#Enginenum").val());
+					if(weight<=0){
+						alert("请输入正确质量")
+						return
+					}
+					for (var i = 0; i < EnglineData.length; i++) {
+						if(EnglineData[i].id==selectEngline){
+							let flag=true;
+							let data=EnglineData[i];
+							for (var j = 0; j < englineList.length; j++) {
+								if(englineList[j].id==data.id){
+									flag=false;
+								}
+							}
+							if(flag){
+								data.dist=data.maxload/weight*data.maxdistance*Enginenum;
+								data.num=Enginenum;
+								englineList.push(data);	
+								let html="";
+								html+="<div class='layui-input-block' style='width: 500px;' id='div_"+data.id+"' > "
+								+"<span style='margin-right: 50px;'>"+data.name+"</span>"
+								+"<button type='button' class='layui-btn layui-btn-normal layui-btn-sm' onclick=\"reduce('"+data.id+"')\"><i class='layui-icon' ></i></button>"
+								+"<input type='text'  oninput='value=value.replace(/[^\d]/g,'')' class='layui-btn layui-btn-primary layui-btn-sm' style='width: 50px;' id='num_"+data.id+"' value="+Enginenum+" onchange=\"numchange('"+data.id+"')\" >"
+								+"<button type='button' class='layui-btn layui-btn-normal layui-btn-sm' onclick=\"add('"+data.id+"')\"><i class='layui-icon'  ></i></button>"
+								+"<button type='button' class='layui-btn layui-btn-sm layui-btn-danger' onclick=\"removeEngine('"+data.id+"')\" ><i class='layui-icon'></i></button>"
+								+"</div>";
+								$("#engineList").html($("#engineList").html()+html);
+							}
+							
+						}
+					}
+					statistics();
+				}
+				function add(id){
+					let value=parseInt($("#num_"+id).val());
+					let weight=parseInt($("#weight").val());
+					value++;
+					for (var i = 0; i < englineList.length; i++) {
+						if(englineList[i].id==id){
+							englineList[i].dist=englineList[i].maxload/weight*englineList[i].maxdistance*value;
+							englineList[i].num=value;
+						}
+					}
+					$("#num_"+id).val(value);
+					statistics();
+				}
+				function numchange(id){
+					let value=parseInt($("#num_"+id).val());
+					let weight=parseInt($("#weight").val());
+					for (var i = 0; i < englineList.length; i++) {
+						if(englineList[i].id==id){
+							englineList[i].dist=englineList[i].maxload/weight*englineList[i].maxdistance*value;
+							englineList[i].num=value;
+						}
+					}
+					statistics();
+				}
+				function removeEngine(id){
+					for (var i = 0; i < englineList.length; i++) {
+						if(englineList[i].id==id){
+							englineList.splice(i);
+							$("#div_"+id).remove();
+							
+						}
+					}
+					statistics();
+				}
+				function reduce(id){
+					let value=parseInt($("#num_"+id).val());
+					let weight=parseInt($("#weight").val());
+					if(value>1){
+						value--;
+						$("#num_"+id).val(value);
+					}
+					
+					for (var i = 0; i < englineList.length; i++) {
+						if(englineList[i].id==id){
+							englineList[i].dist=englineList[i].maxload/weight*englineList[i].maxdistance*value;
+							englineList[i].num=value;
+						}
+					}
+					statistics();
+				}
+				function statistics(){
+					let TotalDistance=0;
+					for (var i = 0; i < englineList.length; i++) {
+						
+						TotalDistance+=englineList[i].dist;
+					}
+					$("#TotalDistance").html("跃迁距离:"+TotalDistance.toFixed(2)+" KM");
+				}
+			</script>
+
+	</body>
+</html>

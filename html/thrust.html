@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>推力数据计算</title>
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<link rel="stylesheet" href="../layui/css/layui.css" media="all">
+	</head>
+	<body style="padding: 20px; background-color: #F2F2F2;">
+		<div class="layui-col-md12">
+			<div class="layui-col-md12">
+				<div class="layui-card">
+					<div class="layui-card-header">推力数据计算</div>
+					<div class="layui-card-body">
+						<form class="layui-form" action="">
+						 <div class="layui-form-item">
+						    <label class="layui-form-label">推进器类型</label>
+						    <div class="layui-input-block" style="width: 200px;">
+						      <select lay-filter="engineType" id="engineType" onchange="queryEngine()">
+						        <option value="0">氢气推进器</option>
+						        <option value="1">空气推进器</option>
+						        <option value="2">离子推进器</option>
+						        <option value="3">螺旋桨</option>
+						      </select>
+						    </div>
+						  </div>
+						  <div class="layui-form-item" pane="">
+						      <label class="layui-form-label">推进器方框类型</label>
+						      <div class="layui-input-block" >
+						        <input type="radio" lay-filter="engineSize" name="engineSize"  value=0 title="大型块" checked="">
+						        <input type="radio" lay-filter="engineSize" name="engineSize"  value=1 title="小型块">
+						      </div>
+						    </div>
+							<div class="layui-form-item" pane="">
+							    <label class="layui-form-label">推进器级别</label>
+							    <div class="layui-input-block">
+							      <input type="radio" lay-filter="engineGrade" name="engineGrade" value=0 title="白板" checked="">
+							      <input type="radio" lay-filter="engineGrade" name="engineGrade" value=1 title="MK1">
+								  <input type="radio" lay-filter="engineGrade" name="engineGrade" value=2 title="MK2">
+								  <input type="radio" lay-filter="engineGrade" name="engineGrade" value=3 title="MK3">
+								  <input type="radio" lay-filter="engineGrade" name="engineGrade" value=4 title="ADV1">
+								  <input type="radio" lay-filter="engineGrade" name="engineGrade" value=5 title="ADV2">
+								  <input type="radio" lay-filter="engineGrade" name="engineGrade" value=6 title="ADV3">
+							    </div>
+							  </div>
+						  <div class="layui-form-item">
+						     <label class="layui-form-label">推进器</label>
+						     <div class="layui-input-block" style="width: 200px;" > 
+						       <select id="engine"  lay-filter="engineFilter">
+						        
+						       </select>
+						     </div>
+						   </div>
+						   <div class="layui-form-item">
+						      <label class="layui-form-label">数量</label>
+						      <div class="layui-input-block" style="width: 200px;" > 
+						       <button type="button" class="layui-btn layui-btn-normal layui-btn-sm"><i class="layui-icon" onclick="reduceEngine()"></i></button>
+						       <input type="text"  oninput="value=value.replace(/[^\d]/g,'')" class="layui-btn layui-btn-primary layui-btn-sm" style="width: 50px;" id="Enginenum" value="1">
+						       <button type="button" class="layui-btn layui-btn-normal layui-btn-sm"><i class="layui-icon"  onclick="addEngine()"></i></button>
+						      </div>
+						    </div>
+							<div class="layui-form-item">
+								<div class="layui-input-block">
+									 <button type="button" class="layui-btn layui-btn-lg layui-btn-normal" onclick="addEngineToTable()">添加推进器</button>
+								</div>
+							  
+							 </div>
+						  
+						 </form>
+						<table class="layui-table">
+						    <colgroup>
+						      <col width="150">
+						      <col width="150">
+						      <col width="150">
+						      <col width="150">
+							  <col width="450">
+							  <col>
+						    </colgroup>
+						    <thead>
+						      <tr>
+						        <th>推进器名</th>
+						        <th>功率(MW)</th>
+						        <th>推力(MN)</th>
+								<th>方块大小</th>
+								<th>数量(个)</th>
+								<th>移除</th>
+						      </tr> 
+						    </thead>
+						    <tbody id="tbody">
+						      
+						    </tbody>
+						  </table>
+						  <br />
+						  <fieldset class="layui-elem-field">
+						    <legend>合计</legend>
+						    <div class="layui-field-box">
+						      <font id="TotalPower" style="color: #1E9FFF;font-size: 20px;">总功率:</font><br />
+						  	<font id="TotalThrust" style="color: #FFB800;font-size: 20px;">总推力:</font>
+						    </div>
+						  </fieldset>
+						  <br />
+						  
+					</div>
+					
+				</div>
+				
+			</div>
+			
+			<div class="layui-col-md12">
+				<br />
+				<br />
+				<div class="layui-col-md12">
+					<div class="layui-card">
+						
+						<div class="layui-card-header">重力推力计算</div>
+						<div class="layui-card-body">
+							<div class="layui-form-item">
+							   <label class="layui-form-label">质量（t）</label>
+							   <div class="layui-input-block" style="width: 400px;" > 
+							    <input type="text"  class="layui-btn layui-btn-primary layui-btn-sm"  id="weight" value="0">
+							   </div>
+							 </div>
+							 <div class="layui-form-item">
+							    <label class="layui-form-label">推力（t）</label>
+							    <div class="layui-input-block" style="width: 400px;" > 
+							     <input type="text"   class="layui-btn layui-btn-primary layui-btn-sm"  id="thrust" value="0">
+							    </div>
+							  </div>
+						<div class="layui-form-item">
+							<div class="layui-input-block">
+								 <button type="button" class="layui-btn layui-btn-lg layui-btn-normal" onclick="calculation()">计算</button>
+							</div>
+						  
+						 </div>
+							<table class="layui-table" style="width: 700px;">
+							    <colgroup>
+							      <col width="250">
+							      <col width="100">
+							      <col width="150">
+							      <col width="250">
+								  <col width="250">
+								  <col>
+							    </colgroup>
+							    <thead>
+							      <tr>
+							        <th>星球</th>
+							        <th>重力</th>
+							        <th>最低推力</th>
+									<th>升空百速加速时间s</th>
+									<th>最大质量升空质量t</th>
+							      </tr> 
+							    </thead>
+							    <tbody id="planetTable">
+							     
+							    </tbody>
+							  </table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+
+<script src="../js/jquery-3.5.1.min.js"></script>
+
+			<script src="../layui/layui.js" charset="utf-8"></script>
+			<script src="engines.js" charset="utf-8"></script>
+			<script>
+				var power=0;
+				var thrust=0;
+				var planet=[
+					{
+						name:"异星",
+						gravity:1.1,
+						minthrust:0,
+						accelerateTiem:0,
+						maxweight:0
+					},
+					{
+						name:"地球",
+						gravity:1.0,
+						minthrust:0,
+						accelerateTiem:0,
+						maxweight:0
+					},
+					{
+						name:"月球",
+						gravity:0.25,
+						minthrust:0,
+						accelerateTiem:0,
+						maxweight:0
+					},
+					{
+						name:"火星",
+						gravity:0.8,
+						minthrust:0,
+						accelerateTiem:0,
+						maxweight:0
+					},
+					{
+						name:"火卫-冰",
+						gravity:0.25,
+						minthrust:0,
+						accelerateTiem:0,
+						maxweight:0
+					},
+					{
+						name:"火卫-沙",
+						gravity:0.25,
+						minthrust:0,
+						accelerateTiem:0,
+						maxweight:0
+					},
+					{
+						name:"白矮星",
+						gravity:3.6,
+						minthrust:0,
+						accelerateTiem:0,
+						maxweight:0
+					},
+					{
+						name:"边疆-沙",
+						gravity:1.0,
+						minthrust:0,
+						accelerateTiem:0,
+						maxweight:0
+					},
+					{
+						name:"边疆-冰",
+						gravity:1.0,
+						minthrust:0,
+						accelerateTiem:0,
+						maxweight:0
+					},
+					{
+						name:"太空",
+						gravity:0,
+						minthrust:0,
+						accelerateTiem:0,
+						maxweight:0
+					}
+				];
+				var form=null;
+				var enginedata=new Array();
+				var enginelist=new Array();
+				var selectEngline={
+					type:0,
+					engineSize:0,
+					grade:0,
+					selectedId:0
+				};
+				var selectedEngine=null;
+				layui.use(['form', 'layedit', 'laydate'], function(){
+				  form = layui.form;
+				  
+				      form.on('select(engineType)', function(data){
+						selectEngline.type=data.value
+						queryEngine()
+				      });      
+					  form.on('radio(engineSize)', function(data){
+					  	selectEngline.engineSize=data.value
+					  	queryEngine()
+					  }); 
+					  form.on('radio(engineGrade)', function(data){
+					  	selectEngline.grade=data.value
+					  	queryEngine()
+					  });
+					  form.on('select(engineFilter)', function(data){
+					  	for (var i = 0; i < enginedata.length; i++) {
+					  		if(data.value==enginedata[i].id){
+								selectedEngine=enginedata[i];
+							}
+					  	}
+					  });
+				});
+				function reduceEngine(){
+					let value=$("#Enginenum").val();
+					if(value>1){
+						value--;
+						$("#Enginenum").val(value);
+					}
+				}
+				function addEngine(){
+					let value=$("#Enginenum").val();
+					value++;
+					$("#Enginenum").val(value);
+				}
+				function reduce(id){
+					let value=$("#num_"+id).val();
+					if(value>1){
+						value--;
+						$("#num_"+id).val(value);
+					}
+					for (var i = 0; i < enginelist.length; i++) {
+						if(enginelist[i].id==id){
+							enginelist[i].num=parseInt(value);
+							$("#power_"+id).html((enginelist[i].num*enginelist[i].power).toFixed(2));
+							$("#thrust_"+id).html((enginelist[i].num*enginelist[i].thrust).toFixed(2));
+						}
+					}
+					RefreshTotal();
+				}
+				function add(id){
+					let value=$("#num_"+id).val();
+					value++;
+					$("#num_"+id).val(value);
+					for (var i = 0; i < enginelist.length; i++) {
+						if(enginelist[i].id==id){
+							enginelist[i].num=parseInt(value);
+							$("#power_"+id).html((enginelist[i].num*enginelist[i].power).toFixed(2));
+							$("#thrust_"+id).html((enginelist[i].num*enginelist[i].thrust).toFixed(2));
+						}
+					}
+					RefreshTotal();
+				}
+				function removeTr(id){
+					$("#tr_"+id).remove();
+					for (var i = 0; i < enginelist.length; i++) {
+						if(enginelist[i].id==id){
+							enginelist.splice(i);
+						}
+					}
+					RefreshTotal();
+				}
+				
+				function queryEngine(){
+					 enginedata=new Array();
+					for (var i = 0; i < engines.length; i++) {
+						if(engines[i].type==selectEngline.type&&engines[i].engineSize==selectEngline.engineSize&&engines[i].grade==selectEngline.grade){
+							enginedata.push(engines[i]);
+						}
+					}
+					if(enginedata.length>0){
+						let html="";
+						for (var i = 0; i < enginedata.length; i++) {
+							html+=" <option value="+enginedata[i].id+">"+enginedata[i].name+"</option>";
+						}
+						selectedEngine=enginedata[0];
+						 $("#engine").html(html);
+					}else{
+						$("#engine").html(" <option>该方块无对应数据</option>")
+						selectedEngine=null;
+					}
+					form.render();
+					
+				}
+				function addEngineToTable(){
+					if(selectedEngine==null){
+						alert("请先选着推进器")
+						return
+					}
+					let num=$("#Enginenum").val();
+					if(num<=0){
+						alert("请输入正确数量")
+						return
+					}
+					selectedEngine.num=parseInt(num);
+					
+					for (var i = 0; i < enginelist.length; i++) {
+						if(selectedEngine.id==enginelist[i].id){
+							enginelist[i].num=parseInt($("#num_"+selectedEngine.id).val())+enginelist[i].num;
+							$("#num_"+enginelist[i].id).val(enginelist[i].num);
+							$("#power_"+enginelist[i].id).html((enginelist[i].num*enginelist[i].power).toFixed(2));
+							$("#thrust_"+enginelist[i].id).html((enginelist[i].num*enginelist[i].thrust).toFixed(2));
+							RefreshTotal();
+							return
+						}
+					}
+					
+					
+					enginelist.push(selectedEngine);
+					let size=selectedEngine.engineSize==0?'大':'小';
+					let gradeName="";
+					switch(selectedEngine.grade) {
+					     case 0:
+					        gradeName=" (白板)";
+					        break;
+					     case 1:
+					       gradeName=" (MK1)";
+					        break;
+						case 2:
+							gradeName=" (MK2)";
+							break;
+						case 3:
+							gradeName=" (MK3)";
+							break;
+						case 4:
+							gradeName=" (ADV1)";
+							break;
+						case 5:
+							gradeName=" (ADV2)";
+							break;
+						case 6:
+							gradeName=" (ADV3)";
+							break;
+					} 
+					let html="";
+						html+="<tr id='tr_"+selectedEngine.id+"'>"
+							+"     <td id='name_"+selectedEngine.id+"'>"+selectedEngine.name+gradeName+"</td>"
+							+ "     <td id='power_"+selectedEngine.id+"'>"+(selectedEngine.power*num).toFixed(2)+"</td>"
+							+"     <td id='thrust_"+selectedEngine.id+"'>"+(selectedEngine.thrust*num).toFixed(2)+"</td>"
+							+"     <td>"+size+"</td>"
+							+"	<td>"
+							+"		<button type='button' class='layui-btn layui-btn-normal layui-btn-sm'><i class='layui-icon' onclick=\"reduce('"+selectedEngine.id+"')\"></i></button>"
+							+"		<input type='text'  oninput='value=value.replace(/[^\d]/g,'')' class='layui-btn layui-btn-primary layui-btn-sm' style='width: 50px;' id='num_"+selectedEngine.id+"' onchange=\"NumberChange('"+selectedEngine.id+"')\" value="+num+" >"
+							+"		<button type='button' class='layui-btn layui-btn-normal layui-btn-sm'><i class='layui-icon'  onclick=\"add('"+selectedEngine.id+"')\"></i></button>"
+							+"	</td>"
+							+"	<th><button type='button' class='layui-btn layui-btn-danger' onclick=\"removeTr('"+selectedEngine.id+"')\"><i class='layui-icon'></i></button></th>"
+							+ "   </tr>";
+					$("#tbody").append(html);
+					RefreshTotal();
+				}
+				function NumberChange(id){
+					let num=$("#num_"+id).val();
+					for (var i = 0; i < enginelist.length; i++) {
+						if(enginelist[i].id==id){
+							enginelist[i].num=parseInt(num);
+							$("#power_"+id).html(enginelist[i].num*enginelist[i].power);
+							$("#thrust_"+id).html(enginelist[i].num*enginelist[i].thrust);
+						}
+					}
+					RefreshTotal();
+				}
+				function RefreshTotal(){
+					
+					for (var i = 0; i < enginelist.length; i++) {
+						power+=enginelist[i].power*enginelist[i].num;
+						thrust+=enginelist[i].thrust*enginelist[i].num;
+					}
+					$("#TotalPower").html("总功率(MW):"+power.toFixed(2));
+					$("#TotalThrust").html("总推力(MN):"+thrust.toFixed(2));
+					$("#thrust").val(thrust.toFixed(2));
+				}
+				function calculation(){
+					let weight=0;
+					let thrust=0;
+					thrust=parseFloat($("#thrust").val()).toFixed(2);
+					weight=parseFloat($("#weight").val()).toFixed(2);
+					let html="";
+					for (var i = 0; i < planet.length; i++) {
+						planet[i].minthrust=weight*1000*9.8*planet[i].gravity/0.9/1000000;
+						planet[i].accelerateTiem=weight/(10*(thrust-planet[i].minthrust));
+						planet[i].maxweight=thrust/(1000*9.8*planet[i].gravity/0.9/1000000);
+						if(planet[i].accelerateTiem<0){
+							planet[i].accelerateTiem="<span class='layui-badge'>无法升空</span>";
+						}else{
+							planet[i].accelerateTiem=planet[i].accelerateTiem.toFixed(2);
+						}
+						if(planet[i].gravity==0){
+							planet[i].maxweight="";
+						}else{
+							planet[i].maxweight=planet[i].maxweight.toFixed(2);
+						}
+						html+="<tr>"
+								+"<th>"+planet[i].name+"</th>"
+								+"<th>"+planet[i].gravity+"</th>"
+								+"<th>"+planet[i].minthrust.toFixed(2)+"</th>"
+								+"<th>"+planet[i].accelerateTiem+"</th>"
+								+"<th>"+planet[i].maxweight+"</th>"
+							+"</tr> ";
+					}
+					$("#planetTable").html(html);
+					
+				}
+			</script>
+
+	</body>
+</html>

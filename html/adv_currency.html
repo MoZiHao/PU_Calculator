@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>ADV零件兑换辣条计算</title>
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<link rel="stylesheet" href="../layui/css/layui.css" media="all">
+		<style type="text/css">
+			.item-image{
+				width: 92px;
+				height: 92px;
+			}
+			td {
+				text-align: center;
+				width: 100px;
+			}
+			.total-Item-div{
+				margin-bottom: 15px;
+			}
+			.total-Item-div img{
+				width: 50px;
+			}
+			.total-Item-div font{
+				width: 10px;
+				color: #07090D;
+				margin-left: 20px;
+				font-size: 30px;
+			}
+		</style>
+	</head>
+	<body style="padding: 20px; background-color: #F2F2F2;">
+		<div class="layui-col-md12">
+			<div class="layui-col-md12">
+				<div class="layui-card">
+					<div class="layui-card-header">辣条兑换计算</div>
+					<div class="layui-card-body">
+						<form class="layui-form" action="">
+							<div class="layui-form-item" pane="">
+							     <label class="layui-form-label">兑换物品</label>
+								<table >
+									<tr>
+										<td><img title="先进组件" src="../icon/1.png"></td>
+										<td><img title="先进发射器" src="../icon/2.png"></td>
+										<td><img title="先进处理器" src="../icon/3.png"></td>
+										<td><img title="先进强化组件" src="../icon/4.png"></td>
+										<td><img title="亿组管理电路" src="../icon/10.png"></td>
+										<td><img title="亿组控制系统" src="../icon/11.png"></td>
+										<td><img title="海盗组件" src="../icon/12.png"></td>
+										<td><img title="钯锭" src="../icon/8.png"></td>
+										<td><img title="铝锭" src="../icon/9.png"></td>
+										<td><img title="核心容器" src="../icon/13.png"></td>
+									</tr>
+									<tr>
+										<div class="layui-input-block">
+											<td>
+												<input type="radio" lay-filter="itemType" name="itemType" value=0  checked="">
+											</td>
+										  <td>
+										  	<input type="radio" lay-filter="itemType" name="itemType" value=1 >
+										  </td><td>
+												<input type="radio" lay-filter="itemType" name="itemType" value=2 >
+											</td><td>                                                             
+												<input type="radio" lay-filter="itemType" name="itemType" value=3 >
+											</td><td>                                                             
+												<input type="radio" lay-filter="itemType" name="itemType" value=4 >
+											</td><td>                                                             
+												<input type="radio" lay-filter="itemType" name="itemType" value=5 >
+											</td><td>                                                             
+												<input type="radio" lay-filter="itemType" name="itemType" value=6 >
+											</td><td>                                                             
+												<input type="radio" lay-filter="itemType" name="itemType" value=7 >
+											</td><td>                                                             
+												<input type="radio" lay-filter="itemType" name="itemType" value=8 >
+											</td><td>                                                             
+												<input type="radio" lay-filter="itemType" name="itemType" value=9 >
+											</td>
+										</div>
+									</tr>
+								</table>
+							   
+							  </div>
+						 <div class="layui-form-item">
+						    <label class="layui-form-label">数量</label>
+						    <div class="layui-input-block" style="width: 400px;" > 
+						     <input type="text"  class="layui-btn layui-btn-primary layui-btn-sm"  id="num" value="0">
+						    </div>
+						  </div>
+						  <div class="layui-form-item">
+						  	<div class="layui-input-block">
+						  		 <button type="button" class="layui-btn layui-btn-lg layui-btn-normal" onclick="calculation()">计算</button>
+						  	</div>
+						   </div>
+						 </form>
+					</div>
+					
+				</div>
+				<br />
+				<fieldset class="layui-elem-field">
+				  <legend>合计</legend>
+				  <div class="layui-field-box" id="totalDiv">
+				    
+				  </div>
+				</fieldset>
+				<br />
+				<div class="layui-card">
+					<div class="layui-card-header">辣条成本计算</div>
+					<div class="layui-card-body">
+						<form class="layui-form" action="">
+							
+						<div class="layui-form-item">
+							<div class="layui-form-item">
+							  <label class="layui-form-label">辣条数量</label>
+							  <div class="layui-input-block" style="width: 400px;" > 
+							   <input type="text"  class="layui-btn layui-btn-primary layui-btn-sm"  id="money" value="0">
+							  </div>
+							</div>
+						 </div>
+						 <div class="layui-form-item" pane="">
+						     <label class="layui-form-label">出售地点</label>
+						     <div class="layui-input-block">
+						       <input type="radio" lay-filter="selllocale" name="selllocale" value=0 title="类地-标准市场" checked="">
+						       <input type="radio" lay-filter="selllocale" name="selllocale" value=1 title="边疆-深空交易站">
+						     </div>
+							 <button type="button" class="layui-btn layui-btn-lg layui-btn-normal" onclick="cost()">计算</button>
+						   </div>
+						   </form>
+					</div>
+				</div>
+				<br />
+				<fieldset class="layui-elem-field">
+				  <legend>合计-(卖菜)</legend>
+				  <div class="layui-field-box">
+				    <font id="Totalzxsc" style="color: #219E58;font-size: 15px;">整箱蔬菜:	</font><br />
+					<font id="Totallqj" style="color: #219E58;font-size: 15px;">冷却剂:	</font><br />
+					<font id="Totalncb" style="color: #219E58;font-size: 15px;">内衬板:	</font><br />
+					<hr>
+					<font id="Totalyjw" style="color: #1E9FFF;font-size: 20px;">有机物:	</font>
+				  </div>
+				</fieldset>
+				<br />
+				<fieldset class="layui-elem-field">
+				  <legend>合计-(化工)</legend>
+				  <div class="layui-field-box">
+				    <font id="Totalhgyl" style="color: #219E58;font-size: 15px;">化工原料:	</font><br />
+					<font id="Totalkfskt" style="color: #219E58;font-size: 15px;">抗腐蚀壳体:	</font><br />
+					<hr>
+					<font id="Totalhgzp" style="color: #1E9FFF;font-size: 20px;">化工制品:	</font>
+				  </div>
+				</fieldset>
+			</div>
+			
+		</div>
+		
+
+
+
+			<script src="../layui/layui.js" charset="utf-8"></script>
+			<script src="../js/jquery-3.5.1.min.js"></script>
+			<script>
+				var csdd=0;
+				var money="../icon/money.png";
+				var oreImage_1="../icon/5.png";
+				var oreImage_2="../icon/6.png";
+				var oreImage_3="../icon/7.png";
+				var itemData=[
+					{
+						id:0,
+						name:"先进组件",
+						totalPrice:10,
+						onlyExchange:false,
+						oreIngot:[{name:"铯锭",icon:oreImage_1,num:5,price:2}]
+					},
+					{
+						id:1,
+						name:"先进发射器",
+						totalPrice:30,
+						onlyExchange:false,
+						oreIngot:[{name:"铯锭",icon:oreImage_1,num:9,price:2},{name:"放射物",icon:oreImage_2,num:3,price:4}]
+					},
+					{
+						id:2,
+						name:"先进处理器",
+						totalPrice:109,
+						onlyExchange:false,
+						oreIngot:[{name:"铯锭",icon:oreImage_1,num:30,price:2},{name:"放射物",icon:oreImage_2,num:10,price:4},{name:"锎",icon:oreImage_3,num:0.75,price:12}]
+					},
+					{
+						id:3,
+						name:"先进强化组件",
+						totalPrice:14,
+						onlyExchange:false,
+						oreIngot:[{name:"铯锭",icon:oreImage_1,num:1,price:2},{name:"锎",icon:oreImage_3,num:1,price:12}]
+					},
+					{
+						id:4,
+						name:"亿组管理电路",
+						totalPrice:15,
+						onlyExchange:true
+					},
+					{
+						id:5,
+						name:"亿组控制系统",
+						totalPrice:125,
+						onlyExchange:true
+					},
+					{
+						id:6,
+						name:"海盗组件",
+						totalPrice:10,
+						onlyExchange:true
+					},
+					{
+						id:7,
+						name:"钯锭",
+						totalPrice:0.3,
+						onlyExchange:true
+					},
+					{
+						id:8,
+						name:"铝锭",
+						totalPrice:0.004,
+						onlyExchange:true
+					},
+					{
+						id:9,
+						name:"核心容器",
+						totalPrice:1250,
+						onlyExchange:true
+					}
+				]
+				var form=null;
+				var selectItemType=0;
+				layui.use(['form', 'layedit', 'laydate'], function(){
+				  form = layui.form;
+				  
+				      form.on('radio(itemType)', function(data){
+						selectItemType=parseInt(data.value);
+				      }); 
+					  form.on('radio(selllocale)', function(data){
+					  	csdd=parseInt(data.value);
+					  }); 
+						   
+					 
+				});
+				function calculation(){
+					let num=parseInt($("#num").val());
+					for (var i = 0; i < itemData.length; i++) {
+						if(itemData[i].id==selectItemType){
+							let totalPrice=itemData[i].totalPrice*num;
+							$("#money").val(totalPrice);
+							let html="<div class='total-Item-div'>"
+										+"<img src='"+money+"'/>"
+										+"<font>"+toThousands(totalPrice.toFixed(0))+"</font>"
+									+"</div>";
+							if(!itemData[i].onlyExchange){
+								for (var j = 0; j < itemData[i].oreIngot.length; j++) {
+									let ore=itemData[i].oreIngot[j];
+									html+="<div class='total-Item-div'>"
+											+"<img src='"+ore.icon+"'/>"
+											+"<font>"+toThousands((ore.num*num).toFixed(0))+"</font>"
+										+"</div>";
+								}
+								
+							}
+							$("#totalDiv").html(html);
+						}
+					}
+					
+				}
+				function toThousands(num) {
+				     var result = '', counter = 0;
+				     num = (num || 0).toString();
+				     for (var i = num.length - 1; i >= 0; i--) {
+				         counter++;
+				         result = num.charAt(i) + result;
+				         if (!(counter % 3) && i != 0) { result = ',' + result; }
+				     }
+				     return result;
+				 }
+				 function cost(){
+					 let money=$("#money").val();
+					 let yjw=0;
+					 if(csdd==0){
+						 //标准市场
+						 yjw=money/1.8;
+					 }else{
+						 //深空交易站
+						 yjw=money/1.95;
+					 }
+					 let hgzp=money/215;
+					 $("#Totalzxsc").html("整箱蔬菜:	"+toThousands((yjw*10).toFixed(0))+" 或 "+toThousands((yjw*10).toFixed(0)*280)+" 信用点 (单价:280)");
+					 $("#Totallqj").html("冷却剂:	"+toThousands((yjw*2).toFixed(0)));
+					 $("#Totalncb").html("内衬板:	"+toThousands((yjw*25).toFixed(0)));
+					 $("#Totalyjw").html("有机物:	"+toThousands(yjw.toFixed(0)));
+					 $("#Totalhgyl").html("化工原料:	"+toThousands((hgzp*10).toFixed(0))+" 与 "+toThousands(hgzp.toFixed(0)*13750)+" 信用点 (单价:13750)");
+					 $("#Totalkfskt").html("抗腐蚀壳体:	"+toThousands((hgzp*500).toFixed(0)) +" = "+toThousands((hgzp*500*0.28).toFixed(0))+" 钯锭 = "+(hgzp*500*0.28*0.3).toFixed(0)+"辣条");
+					 $("#Totalhgzp").html("化工制品:	"+toThousands(hgzp.toFixed(0)));
+				 }
+			</script>
+
+	</body>
+</html>
